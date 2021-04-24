@@ -4,8 +4,6 @@ RUN apk update \
     && apk add sqlite \
     && apk add socat \
     && apk add build-base
-RUN which sqlite3
-RUN which gcc
 COPY go.mod .
 COPY go.sum .
 RUN go mod download
