@@ -10,6 +10,7 @@ type Ticket struct {
 	TicketState  TicketState      `json:"ticketState"`
 	Items        []TicketLineItem `json:"items"`
 	RestaurantID uuid.UUID        `json:"restaurant"`
+	Restaurant   Restaurant
 }
 
 func (ticket *Ticket) BeforeCreate(store *gorm.DB) error {

@@ -7,9 +7,10 @@ import (
 
 type TicketLineItem struct {
 	ID         uuid.UUID `json:"id"`
-	MenuItemID uuid.UUID `json:"item"`
-	Quantity   string    `json:"quantity" gorm:"not null"`
-	TicketId   string    `json:"ticket"`
+	MenuItemID uuid.UUID `json:"item" gorm:"not null"`
+	MenuItem   MenuItem
+	Quantity   int       `json:"quantity" gorm:"not null"`
+	TicketID   uuid.UUID `json:"ticket" gorm:"not null"`
 }
 
 func (ticketLineItem *TicketLineItem) BeforeCreate(scope *gorm.DB) error {

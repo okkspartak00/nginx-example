@@ -8,8 +8,9 @@ import (
 type MenuItem struct {
 	ID             uuid.UUID `json:"id"`
 	Name           string    `json:"name" gorm:"not null"`
-	RestaurantID   string    `json:"restaurant"`
-	TicketLineItem []TicketLineItem
+	RestaurantID   uuid.UUID `json:"restaurant" gorm:"not null"`
+	Restaurant     Restaurant
+	TicketLineItem []TicketLineItem `json:"ticketLineItem"`
 }
 
 func (menuItem *MenuItem) BeforeCreate(scope *gorm.DB) error {
