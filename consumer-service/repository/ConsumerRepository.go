@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/veljkomaksimovic/nginx-example/model"
 	"gorm.io/gorm"
 )
@@ -11,7 +13,8 @@ type ConsumerRepository struct {
 
 func (repo *ConsumerRepository) CreateConsumer(consumer *model.Consumer) error {
 	result := repo.Database.Create(consumer)
-	print(result.Error)
-	print(result.RowsAffected)
+	//TODO convert to logs
+	print(result.Error.Error())
+	fmt.Println(result.RowsAffected)
 	return nil
 }
