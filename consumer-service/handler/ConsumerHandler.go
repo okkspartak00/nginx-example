@@ -30,8 +30,7 @@ func (handler *ConsumerHandler) CreateConsumer(w http.ResponseWriter, r *http.Re
 		return
 	}
 	fmt.Println(consumer)
-
-	handler.Service.CreateConsumer(&consumer)
+	err = handler.Service.CreateConsumer(&consumer)
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
 }
