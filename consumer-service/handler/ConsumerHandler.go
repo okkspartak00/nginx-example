@@ -22,6 +22,7 @@ func (handler *ConsumerHandler) Hello(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handler *ConsumerHandler) CreateConsumer(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("creating")
 	var consumer model.Consumer
 	err := json.NewDecoder(r.Body).Decode(&consumer)
 	if err != nil {

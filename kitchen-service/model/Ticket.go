@@ -17,3 +17,7 @@ func (ticket *Ticket) BeforeCreate(store *gorm.DB) error {
 	ticket.ID = uuid.New()
 	return nil
 }
+
+func (ticket *Ticket) AddItem(item TicketLineItem) {
+	ticket.Items = append(ticket.Items, item)
+}
