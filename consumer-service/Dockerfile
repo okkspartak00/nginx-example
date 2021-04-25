@@ -9,5 +9,5 @@ COPY go.sum .
 RUN go mod download
 COPY . .
 RUN go build -o consumer-service
-EXPOSE 8081
+EXPOSE 8080
 CMD ["./consumer-service"]
