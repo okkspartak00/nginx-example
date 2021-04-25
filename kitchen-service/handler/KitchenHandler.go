@@ -23,7 +23,25 @@ func (handler *KitchenHandler) Hello(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handler *KitchenHandler) Verify(w http.ResponseWriter, r *http.Request) {
-	//TODO
+	fmt.Println("verifying...")
+	vars := mux.Vars(r)
+	var items dto.TicketLineItemsDTO
+	err := json.NewDecoder(r.Body).Decode(&items)
+	if err != nil {
+		//TODO log
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	fmt.Println(items)
+	result := handler.Service.Verify(vars["restaurantId"], items)
+	w.Header().Set("Content-Type", "application/json")
+	if result == false {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	return
+
 }
 
 func (handler *KitchenHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -36,11 +54,30 @@ func (handler *KitchenHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println(items)
-	handler.Service.Create(vars["restaurantId"], vars["orderId"], items)
-	w.WriteHeader(http.StatusCreated)
+	if handler.Service.Create(vars["restaurantId"], vars["orderId"], items) {
+		w.WriteHeader(http.StatusCreated)
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+	}
 	w.Header().Set("Content-Type", "application/json")
 }
 
 func (handler *KitchenHandler) Update(w http.ResponseWriter, r *http.Request) {
-	//TODO
+	vars := mux.Vars(r)
+	id := vars["ticketId"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	status := vars["state"]
+	if status == "" {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	if !handler.Service.TicketRepo.ExistsById(id) {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	err := handler.Service.Update(id, status)
+	if err != nil {
+		print(err)
+		w.WriteHeader(http.StatusBadRequest)
+	}
 }

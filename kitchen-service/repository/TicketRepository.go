@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"kitchen-service/model"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -32,5 +33,13 @@ func (repo *TicketRepository) CreateTicket(ticket *model.Ticket) error {
 	print(result.Error.Error())
 	fmt.Println(result.RowsAffected)
 	fmt.Println("Ticket Created")
+	return nil
+}
+
+func (repo *TicketRepository) UpdateTicket(ticketId uuid.UUID, status model.TicketState) error {
+	result := repo.Database.Model(&model.Ticket{}).Where("id = ?", ticketId).Update("ticket_state", status)
+	//TODO convert to logs
+	fmt.Println(result.RowsAffected)
+	fmt.Println("updating")
 	return nil
 }

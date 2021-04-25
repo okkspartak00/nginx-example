@@ -46,6 +46,21 @@ func initDB() *gorm.DB {
 
 	/*Loading test data*/
 
+	tickets := []model.Ticket{
+		{TicketState: model.ACCEPTED,
+			Items: []model.TicketLineItem{},
+			Restaurant: model.Restaurant{
+				Name: "R",
+				MenuItems: []model.MenuItem{
+					{Name: "jaja"},
+					{Name: "palacinke"},
+				},
+			},
+		},
+	}
+
+	database.Create(&tickets)
+
 	return database
 }
 
@@ -56,8 +71,12 @@ func handleFunc(handler *handler.KitchenHandler) {
 
 	router.HandleFunc("/", handler.Hello).Methods("GET")
 	router.HandleFunc("/create/{restaurantId}/{orderId}", handler.Create).Methods("POST")
+	router.HandleFunc("/verify/{restaurantId}", handler.Verify).Methods("POST")
+	router.HandleFunc("/update/{ticketId}/{state}", handler.Update).Methods("PUT")
 
 	log.Fatal(http.ListenAndServe(":8082", router))
+
+	//log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
 }
 
 func main() {
@@ -68,24 +87,24 @@ func main() {
 	service := initServices(menuItemRepo, restaurantRepo, TicketRepository)
 	handler := initHandler(service)
 
-	// ticketLineItems := []model.TicketLineItem{
-	// 	{MenuItem: menuItems[0], Quantity: 2},
-	// 	{MenuItem: menuItems[1], Quantity: 2},
+	// // ticketLineItems := []model.TicketLineItem{
+	// // 	{MenuItem: menuItems[0], Quantity: 2},
+	// // 	{MenuItem: menuItems[1], Quantity: 2},
+	// // }
+
+	// //restaurant := model.Restaurant{Name: "Trattoria", MenuItems: menuItems}
+	// restaurant := model.Restaurant{Name: "Trattoria"}
+	// database.Create(&restaurant)
+
+	// menuItems := []model.MenuItem{
+	// 	{Name: "Pizza", Restaurant: restaurant},
+	// 	{Name: "Pasta", Restaurant: restaurant},
 	// }
 
-	//restaurant := model.Restaurant{Name: "Trattoria", MenuItems: menuItems}
-	restaurant := model.Restaurant{Name: "Trattoria"}
-	database.Create(&restaurant)
-
-	menuItems := []model.MenuItem{
-		{Name: "Pizza", Restaurant: restaurant},
-		{Name: "Pasta", Restaurant: restaurant},
-	}
-
-	for _, menuItem := range menuItems {
-		database.Create(&menuItem)
-	}
-	// fmt.Println(menuItemRepo.ExistsByIdAndRestaurantID(menuItems[0].ID, restaurant.ID))
+	// for _, menuItem := range menuItems {
+	// 	database.Create(&menuItem)
+	// }
+	// // fmt.Println(menuItemRepo.ExistsByIdAndRestaurantID(menuItems[0].ID, restaurant.ID))
 
 	handleFunc(handler)
 }

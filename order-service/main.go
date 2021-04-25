@@ -57,7 +57,7 @@ func handleFunc(handler *handler.OrderHandler) {
 
 	router.HandleFunc("/", handler.Hello).Methods("GET")
 	router.HandleFunc("/", handler.CreateOrder).Methods("POST")
-	router.HandleFunc("/{orderId}/{status}", handler.UpdateStatus).Methods("PUT")
+	router.HandleFunc("/{orderId}/{status}", handler.UpdateStatus).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
 }

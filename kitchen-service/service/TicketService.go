@@ -5,6 +5,8 @@ import (
 	"kitchen-service/dto"
 	"kitchen-service/model"
 	"kitchen-service/repository"
+	"net/http"
+	"os"
 
 	"github.com/google/uuid"
 )
@@ -29,9 +31,10 @@ func (service *TicketService) Verify(restaurantID string, items dto.TicketLineIt
 	return true
 }
 
-func (service *TicketService) Create(restaurantId string, orderId string, items dto.TicketLineItemsDTO) {
+func (service *TicketService) Create(restaurantId string, orderId string, items dto.TicketLineItemsDTO) bool {
 	if !service.RestaurantRepo.ExistsById(restaurantId) {
 		fmt.Println(("Restaurant does not exist!"))
+		return false
 	} else {
 		fmt.Println(("Restaurant found"))
 		orderUuid, _ := uuid.Parse(orderId)
@@ -41,17 +44,47 @@ func (service *TicketService) Create(restaurantId string, orderId string, items 
 		ticket := model.Ticket{ID: orderUuid, RestaurantID: restaurantUuid, TicketState: model.PENDING, Items: it}
 		for _, item := range items.TicketLineItems {
 			menuItem := service.MenuItemRepo.FindById(item.MenuItemId)
-			fmt.Println("1")
+			fmt.Println(item.MenuItemId)
 			ticketLineItem := model.TicketLineItem{MenuItem: menuItem, Quantity: item.Quantity}
 			ticket.AddItem(ticketLineItem)
 
 		}
-		fmt.Println(ticket)
+		fmt.Println(ticket.RestaurantID)
 		service.TicketRepo.CreateTicket(&ticket)
+		return true
 
 	}
 }
 
-func (service *TicketService) Update(restaurantId string, orderId string, items dto.TicketLineItemsDTO) {
-	//TODO
+func (service *TicketService) Update(ticketId string, ticketState string) error {
+	id, err := uuid.Parse(ticketId)
+	if err != nil {
+		print(err)
+		return err
+	}
+	fmt.Println(ticketState)
+	var orderStatus model.TicketState
+	switch ticketState {
+	case "pending":
+		orderStatus = model.PENDING
+	case "accepted":
+		orderStatus = model.ACCEPTED
+	case "rejected":
+		orderStatus = model.REJECTED
+	}
+	fmt.Println(orderStatus)
+
+	url := fmt.Sprintf("http://%s:%s/%s/%s", os.Getenv("ORDER_SERVICE_DOMAIN"), os.Getenv("ORDER_SERVICE_PORT"), ticketId, ticketState)
+	print(url)
+	resp, err := http.Get(url)
+	if err != nil {
+		print(err)
+		return err
+	}
+	if resp.StatusCode == 404 {
+		return fmt.Errorf("order client error")
+	}
+
+	service.TicketRepo.UpdateTicket(id, orderStatus)
+	return nil
 }
