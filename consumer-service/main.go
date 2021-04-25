@@ -48,8 +48,9 @@ func handleFunc(handler *handler.ConsumerHandler) {
 
 	router.HandleFunc("/", handler.Hello).Methods("GET")
 	router.HandleFunc("/", handler.CreateConsumer).Methods("POST")
+	router.HandleFunc("/verify/{consumerId}", handler.Verify).Methods("GET")
 
-	log.Fatal(http.ListenAndServe(":8081", router))
+	log.Fatal(http.ListenAndServe(":8082", router))
 }
 
 func main() {

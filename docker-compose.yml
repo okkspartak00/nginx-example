@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+
+  consumer-service:
+    image: consumer-service:compose_build
+    build:
+      context: ./consumer-service
+      dockerfile: Dockerfile
+#    ports:
+#      - 9000:8080
+    networks:
+      - backend
+    environment:
+      PORT: ${CONSUMER_SERVICE_PORT}
+      
+  order-service:
+    image: order-service:compose_build
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    ports:
+      - 9001:8080
+    networks:
+      - backend
+    environment:
+      CONSUMER_SERVICE_DOMAIN: ${CONSUMER_SERVICE_DOMAIN}
+      CONSUMER_SERVICE_PORT: ${CONSUMER_SERVICE_PORT}
+      PORT: ${ORDER_SERVICE_PORT}
+
+
+networks:
+  backend:
+    name: restuarant
+    driver: bridge

@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/veljkomaksimovic/nginx-example/model"
 	"github.com/veljkomaksimovic/nginx-example/service"
 )
@@ -32,10 +33,27 @@ func (handler *ConsumerHandler) CreateConsumer(w http.ResponseWriter, r *http.Re
 	}
 	fmt.Println(consumer)
 	err = handler.Service.CreateConsumer(&consumer)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusExpectationFailed)
+	}
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
 }
 
-func Verify() {
-	//TODO
+func (handler *ConsumerHandler) Verify(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["consumerId"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	exists, err := handler.Service.UserExists(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	if exists {
+		w.WriteHeader(http.StatusOK)
+	} else {
+		w.WriteHeader(http.StatusNotFound)
+	}
 }
