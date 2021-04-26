@@ -10,7 +10,7 @@ type Order struct {
 	RestaurantID uuid.UUID       `json:"restaurant_id"`
 	ConsumerID   uuid.UUID       `json:"consumer_id"`
 	OrderStatus  int             `json:"order_status_enum"`
-	OrderItems   []OrderLineItem `json:"order_items_list" gorm:"foreignKey:OrderID"`
+	OrderItems   []OrderLineItem `json:"items" gorm:"foreignKey:OrderID"`
 }
 
 //TODO checnk the same thig mentioned in Consumer.go

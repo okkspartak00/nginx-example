@@ -9,5 +9,5 @@ COPY go.sum .
 RUN go mod download
 COPY . .
 RUN go build -o order-service
-EXPOSE 8081
+EXPOSE 8080
 CMD ["./order-service"]

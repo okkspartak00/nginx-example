@@ -34,6 +34,7 @@ func (handler *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusExpectationFailed)
+		return
 	}
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
@@ -44,10 +45,12 @@ func (handler *OrderHandler) UpdateStatus(w http.ResponseWriter, r *http.Request
 	id := vars["orderId"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 	status := vars["status"]
 	if status == "" {
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 	err := handler.Service.ChangeStatus(id, status)
 	if err != nil {

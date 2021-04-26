@@ -6,8 +6,8 @@ services:
     build:
       context: ./consumer-service
       dockerfile: Dockerfile
-#    ports:
-#      - 9000:8080
+    ports:
+      - 8084:8080
     networks:
       - backend
     environment:
@@ -18,28 +18,30 @@ services:
     build:
       context: ./order-service
       dockerfile: Dockerfile
-    # ports:
-    #   - 9001:8080
+    ports:
+      - 8082:8080
     networks:
       - backend
     environment:
       CONSUMER_SERVICE_DOMAIN: ${CONSUMER_SERVICE_DOMAIN}
-      CONSUMER_SERVICE_PORT: ${CONSUMER_SERVICE_PORT}
+      CONSUMER_SERVICE_PORT: 8080
+      KITCHEN_SERVICE_DOMAIN: ${KITCHEN_SERVICE_DOMAIN}
+      KITCHEN_SERVICE_PORT: 8080
       PORT: ${ORDER_SERVICE_PORT}
 
-  # kitchen-service:
-  #   image: kitchen-service:compose_build
-  #   build:
-  #     context: ./kitchen-service
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 9000:8080
-  #   networks:
-  #     - backend
-  #   environment:
-  #     ORDER_SERVICE_DOMAIN: ${CONSUMER_SERVICE_DOMAIN}
-  #     ORDER_SERVICE_PORT: ${CONSUMER_SERVICE_PORT}
-  #     PORT: ${KITCHEN_SERVICE_PORT}
+  kitchen-service:
+    image: kitchen-service:compose_build
+    build:
+      context: ./kitchen-service
+      dockerfile: Dockerfile
+    ports:
+      - 8083:8080
+    networks:
+      - backend
+    environment:
+      ORDER_SERVICE_DOMAIN: ${ORDER_SERVICE_DOMAIN}
+      ORDER_SERVICE_PORT: 8082
+      PORT: ${KITCHEN_SERVICE_PORT}
 
 
 networks:

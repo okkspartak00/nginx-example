@@ -51,11 +51,11 @@ func (handler *KitchenHandler) Create(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	fmt.Println(items)
-	if handler.Service.Create(vars["restaurantId"], vars["orderId"], items) {
-		w.WriteHeader(http.StatusCreated)
-	} else {
+	err = handler.Service.Create(vars["restaurantId"], vars["orderId"], items)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+	} else {
+		w.WriteHeader(http.StatusCreated)
 	}
 	w.Header().Set("Content-Type", "application/json")
 }
@@ -66,10 +66,11 @@ func (handler *KitchenHandler) Update(w http.ResponseWriter, r *http.Request) {
 	status := vars["state"]
 	if !handler.Service.TicketRepo.ExistsById(id) {
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 	err := handler.Service.Update(id, status)
 	if err != nil {
-		print(err)
+		fmt.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
 	}
 }

@@ -67,13 +67,12 @@ func initHandler(service *service.TicketService) *handler.KitchenHandler {
 func handleFunc(handler *handler.KitchenHandler) {
 	router := mux.NewRouter().StrictSlash(true)
 
-	fmt.Println("server running ")
-
 	router.HandleFunc("/", handler.Hello).Methods("GET")
 	router.HandleFunc("/create/{restaurantId}/{orderId}", handler.Create).Methods("POST")
 	router.HandleFunc("/verify/{restaurantId}", handler.Verify).Methods("POST")
 	router.HandleFunc("/update/{ticketId}/{state}", handler.Update).Methods("PUT")
 
+	fmt.Println("server running ")
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
 }
 

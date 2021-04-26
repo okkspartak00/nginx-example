@@ -72,6 +72,7 @@ func handleFunc(handler *handler.OrderHandler) {
 	router.HandleFunc("/", handler.CreateOrder).Methods("POST")
 	router.HandleFunc("/{orderId}/{status}", handler.UpdateStatus).Methods("GET")
 
+	fmt.Println("server running ")
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
 }
 

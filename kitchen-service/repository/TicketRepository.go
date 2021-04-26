@@ -21,7 +21,6 @@ func (repo *TicketRepository) ExistsById(ticketID string) bool {
 }
 
 func (repo *TicketRepository) FindById(ticketID string) *model.Ticket {
-
 	ticket := &model.Ticket{}
 	repo.Database.First(&ticket, "id = ?", ticketID)
 	return ticket
@@ -29,9 +28,10 @@ func (repo *TicketRepository) FindById(ticketID string) *model.Ticket {
 
 func (repo *TicketRepository) CreateTicket(ticket *model.Ticket) error {
 	result := repo.Database.Create(ticket)
-	//TODO convert to logs
-	print(result.Error.Error())
 	fmt.Println(result.RowsAffected)
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("ticket not created")
+	}
 	fmt.Println("Ticket Created")
 	return nil
 }

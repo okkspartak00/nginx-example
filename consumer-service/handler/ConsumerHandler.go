@@ -42,14 +42,17 @@ func (handler *ConsumerHandler) CreateConsumer(w http.ResponseWriter, r *http.Re
 }
 
 func (handler *ConsumerHandler) Verify(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("verifying")
 	vars := mux.Vars(r)
 	id := vars["consumerId"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 	exists, err := handler.Service.UserExists(id)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 	if exists {
 		w.WriteHeader(http.StatusOK)

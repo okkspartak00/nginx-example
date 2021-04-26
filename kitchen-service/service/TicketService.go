@@ -31,29 +31,36 @@ func (service *TicketService) Verify(restaurantID string, items dto.TicketLineIt
 	return true
 }
 
-func (service *TicketService) Create(restaurantId string, orderId string, items dto.TicketLineItemsDTO) bool {
-	if !service.RestaurantRepo.ExistsById(restaurantId) {
-		fmt.Println(("Restaurant does not exist!"))
-		return false
-	} else {
-		fmt.Println(("Restaurant found"))
-		orderUuid, _ := uuid.Parse(orderId)
-
-		restaurantUuid, _ := uuid.Parse(restaurantId)
-		var it []model.TicketLineItem
-		ticket := model.Ticket{ID: orderUuid, RestaurantID: restaurantUuid, TicketState: model.PENDING, Items: it}
-		for _, item := range items.TicketLineItems {
-			menuItem := service.MenuItemRepo.FindById(item.MenuItemId)
-			fmt.Println(item.MenuItemId)
-			ticketLineItem := model.TicketLineItem{MenuItem: menuItem, Quantity: item.Quantity}
-			ticket.AddItem(ticketLineItem)
-
-		}
-		fmt.Println(ticket.RestaurantID)
-		service.TicketRepo.CreateTicket(&ticket)
-		return true
-
+func (service *TicketService) Create(restaurantId string, orderId string, items dto.TicketLineItemsDTO) error {
+	fmt.Println("Creating ticket")
+	restaurantUuid, err := uuid.Parse(restaurantId)
+	if err != nil {
+		return err
 	}
+	if !service.RestaurantRepo.ExistsById(restaurantId) {
+		return fmt.Errorf(fmt.Sprintf("restaurant with id %s does not exist!", restaurantId))
+	}
+	fmt.Println("Restaurant found")
+	orderUuid, err := uuid.Parse(orderId)
+	if err != nil {
+		return err
+	}
+	ticket := model.Ticket{ID: orderUuid, RestaurantID: restaurantUuid, TicketState: model.PENDING}
+	for _, item := range items.TicketLineItems {
+		menuItem, err := service.MenuItemRepo.FindById(item.MenuItemId)
+		if err != nil {
+			return fmt.Errorf(fmt.Sprintf("menu item with id %s not found", item.MenuItemId))
+		}
+		ticketLineItem := model.TicketLineItem{MenuItem: menuItem, Quantity: item.Quantity}
+		ticket.AddItem(ticketLineItem)
+	}
+	fmt.Println(ticket)
+	err = service.TicketRepo.CreateTicket(&ticket)
+	if err != nil {
+		return err
+	}
+	return nil
+
 }
 
 func (service *TicketService) Update(ticketId string, ticketState string) error {

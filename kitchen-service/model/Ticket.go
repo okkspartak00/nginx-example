@@ -14,7 +14,9 @@ type Ticket struct {
 }
 
 func (ticket *Ticket) BeforeCreate(store *gorm.DB) error {
-	ticket.ID = uuid.New()
+	if ticket.ID == uuid.Nil {
+		ticket.ID = uuid.New()
+	}
 	return nil
 }
 
