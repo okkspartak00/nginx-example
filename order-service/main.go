@@ -38,6 +38,19 @@ func initDB() *gorm.DB {
 	for i := range orders {
 		database.Create(&orders[i])
 	}
+
+	/*Primer eager i lazy ucitavanja entiteta koji imaju one-to-many asocijacije uz GORM object relation mapper
+	//1' eager loading:
+	var orderEagerLoading model.Order
+	database.Preload(clause.Associations).First(&orderEagerLoading, "id = ?", orders[0].ID)
+	fmt.Println("---------Eager Loading---------")
+	fmt.Println(orderEagerLoading)
+	//2' lazy loading:
+	var orderLazyLoading model.Order
+	database.First(&orderLazyLoading, "id = ?", orders[0].ID)
+	fmt.Println("---------Lazy Loading---------")
+	fmt.Println(orderLazyLoading)
+	*/
 	return database
 }
 
