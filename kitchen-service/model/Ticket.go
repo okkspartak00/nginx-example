@@ -7,9 +7,9 @@ import (
 
 type Ticket struct {
 	ID           uuid.UUID        `json:"id"`
-	TicketState  TicketState      `json:"ticketState"`
+	TicketState  TicketState      `json:"ticket_state"`
 	Items        []TicketLineItem `json:"items"`
-	RestaurantID uuid.UUID        `json:"restaurant"`
+	RestaurantID uuid.UUID        `json:"restaurant_id"`
 	Restaurant   Restaurant
 }
 

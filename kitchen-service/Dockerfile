@@ -9,5 +9,5 @@ COPY go.sum .
 RUN go mod download
 COPY . .
 RUN go build -o kitchen-service
-EXPOSE 8082
+EXPOSE 8080
 CMD ["./kitchen-service"]

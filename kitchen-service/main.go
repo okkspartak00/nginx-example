@@ -8,11 +8,41 @@ import (
 	"kitchen-service/service"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
+
+func initDB() *gorm.DB {
+	database, err := gorm.Open(sqlite.Open("kitchen.db"), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	database.AutoMigrate(&model.Restaurant{})
+	database.AutoMigrate(&model.MenuItem{})
+	database.AutoMigrate(&model.Ticket{})
+	database.AutoMigrate(&model.TicketLineItem{})
+
+	/*Loading test data*/
+
+	restaurant := model.Restaurant{Name: "Tamo Daleko"}
+	menuItems := []model.MenuItem{
+		{Name: "gulas"}, {Name: "palacinke"}, {Name: "riblja corba"},
+	}
+	restaurant.MenuItems = menuItems
+	database.Create(&restaurant)
+
+	ticketItems := []model.TicketLineItem{
+		{MenuItemID: menuItems[0].ID, Quantity: 3}, {MenuItemID: menuItems[1].ID, Quantity: 2},
+	}
+	ticket := model.Ticket{
+		TicketState: model.PENDING, Items: ticketItems, RestaurantID: restaurant.ID,
+	}
+	database.Create(&ticket)
+	return database
+}
 
 func initRestaurantRepo(database *gorm.DB) *repository.RestaurantRepository {
 	return &repository.RestaurantRepository{Database: database}
@@ -34,36 +64,6 @@ func initHandler(service *service.TicketService) *handler.KitchenHandler {
 	return &handler.KitchenHandler{Service: service}
 }
 
-func initDB() *gorm.DB {
-	database, err := gorm.Open(sqlite.Open("kitchen.db"), &gorm.Config{})
-	if err != nil {
-		log.Fatal(err)
-	}
-	database.AutoMigrate(&model.Restaurant{})
-	database.AutoMigrate(&model.MenuItem{})
-	database.AutoMigrate(&model.Ticket{})
-	database.AutoMigrate(&model.TicketLineItem{})
-
-	/*Loading test data*/
-
-	tickets := []model.Ticket{
-		{TicketState: model.ACCEPTED,
-			Items: []model.TicketLineItem{},
-			Restaurant: model.Restaurant{
-				Name: "R",
-				MenuItems: []model.MenuItem{
-					{Name: "jaja"},
-					{Name: "palacinke"},
-				},
-			},
-		},
-	}
-
-	database.Create(&tickets)
-
-	return database
-}
-
 func handleFunc(handler *handler.KitchenHandler) {
 	router := mux.NewRouter().StrictSlash(true)
 
@@ -74,9 +74,7 @@ func handleFunc(handler *handler.KitchenHandler) {
 	router.HandleFunc("/verify/{restaurantId}", handler.Verify).Methods("POST")
 	router.HandleFunc("/update/{ticketId}/{state}", handler.Update).Methods("PUT")
 
-	log.Fatal(http.ListenAndServe(":8082", router))
-
-	//log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
 }
 
 func main() {
@@ -86,25 +84,6 @@ func main() {
 	TicketRepository := initTicketRepository(database)
 	service := initServices(menuItemRepo, restaurantRepo, TicketRepository)
 	handler := initHandler(service)
-
-	// // ticketLineItems := []model.TicketLineItem{
-	// // 	{MenuItem: menuItems[0], Quantity: 2},
-	// // 	{MenuItem: menuItems[1], Quantity: 2},
-	// // }
-
-	// //restaurant := model.Restaurant{Name: "Trattoria", MenuItems: menuItems}
-	// restaurant := model.Restaurant{Name: "Trattoria"}
-	// database.Create(&restaurant)
-
-	// menuItems := []model.MenuItem{
-	// 	{Name: "Pizza", Restaurant: restaurant},
-	// 	{Name: "Pasta", Restaurant: restaurant},
-	// }
-
-	// for _, menuItem := range menuItems {
-	// 	database.Create(&menuItem)
-	// }
-	// // fmt.Println(menuItemRepo.ExistsByIdAndRestaurantID(menuItems[0].ID, restaurant.ID))
 
 	handleFunc(handler)
 }

@@ -62,29 +62,25 @@ func (service *TicketService) Update(ticketId string, ticketState string) error 
 		print(err)
 		return err
 	}
-	fmt.Println(ticketState)
-	var orderStatus model.TicketState
+	var ticketStatus model.TicketState
 	switch ticketState {
 	case "pending":
-		orderStatus = model.PENDING
+		ticketStatus = model.PENDING
 	case "accepted":
-		orderStatus = model.ACCEPTED
+		ticketStatus = model.ACCEPTED
 	case "rejected":
-		orderStatus = model.REJECTED
+		ticketStatus = model.REJECTED
 	}
-	fmt.Println(orderStatus)
-
 	url := fmt.Sprintf("http://%s:%s/%s/%s", os.Getenv("ORDER_SERVICE_DOMAIN"), os.Getenv("ORDER_SERVICE_PORT"), ticketId, ticketState)
-	print(url)
 	resp, err := http.Get(url)
 	if err != nil {
 		print(err)
 		return err
 	}
-	if resp.StatusCode == 404 {
+	if resp.StatusCode != 200 {
 		return fmt.Errorf("order client error")
 	}
 
-	service.TicketRepo.UpdateTicket(id, orderStatus)
+	service.TicketRepo.UpdateTicket(id, ticketStatus)
 	return nil
 }

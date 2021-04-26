@@ -35,13 +35,11 @@ func (handler *KitchenHandler) Verify(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(items)
 	result := handler.Service.Verify(vars["restaurantId"], items)
 	w.Header().Set("Content-Type", "application/json")
-	if result == false {
-		w.WriteHeader(http.StatusBadRequest)
+	if !result {
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	return
-
 }
 
 func (handler *KitchenHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -65,13 +63,7 @@ func (handler *KitchenHandler) Create(w http.ResponseWriter, r *http.Request) {
 func (handler *KitchenHandler) Update(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["ticketId"]
-	if id == "" {
-		w.WriteHeader(http.StatusBadRequest)
-	}
 	status := vars["state"]
-	if status == "" {
-		w.WriteHeader(http.StatusBadRequest)
-	}
 	if !handler.Service.TicketRepo.ExistsById(id) {
 		w.WriteHeader(http.StatusBadRequest)
 	}

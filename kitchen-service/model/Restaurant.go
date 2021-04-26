@@ -7,8 +7,8 @@ import (
 
 type Restaurant struct {
 	ID        uuid.UUID  `json:"id"`
-	Name      string     `json:"name" gorm:"not null"`
-	MenuItems []MenuItem `json:"menuItems"`
+	Name      string     `json:"name" gorm:"unique;not null"`
+	MenuItems []MenuItem `json:"menu_items"`
 }
 
 func (restaurant *Restaurant) BeforeCreate(scope *gorm.DB) error {

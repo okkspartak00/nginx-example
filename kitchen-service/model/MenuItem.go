@@ -6,11 +6,10 @@ import (
 )
 
 type MenuItem struct {
-	ID             uuid.UUID `json:"id"`
-	Name           string    `json:"name" gorm:"not null"`
-	RestaurantID   uuid.UUID `json:"restaurant" gorm:"not null"`
-	Restaurant     Restaurant
-	TicketLineItem []TicketLineItem `json:"ticketLineItem"`
+	ID           uuid.UUID `json:"id"`
+	Name         string    `json:"name" gorm:"unique;not null"`
+	RestaurantID uuid.UUID `json:"restaurant"`
+	Restaurant   Restaurant
 }
 
 func (menuItem *MenuItem) BeforeCreate(scope *gorm.DB) error {
