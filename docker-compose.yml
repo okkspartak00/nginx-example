@@ -16,8 +16,6 @@ services:
     build:
       context: ./consumer-service
       dockerfile: Dockerfile
-#    ports:
-#      - 8084:8080
     networks:
       - backend
     environment:
@@ -28,8 +26,6 @@ services:
     build:
       context: ./order-service
       dockerfile: Dockerfile
-#    ports:
-#      - 8082:8080
     networks:
       - backend
     environment:
@@ -44,8 +40,6 @@ services:
     build:
       context: ./kitchen-service
       dockerfile: Dockerfile
-#    ports:
-#      - 8083:8080
     networks:
       - backend
     environment:
