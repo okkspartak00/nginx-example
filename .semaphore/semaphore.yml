@@ -3,6 +3,9 @@ name: Semaphore Go CI examplee
 agent:
   machine:
     type: s1-kubernetes
+  containers:
+    - name: main
+      image: 'ubuntu:jammy'
 blocks:
   - name: Build prod
     task:
