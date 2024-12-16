@@ -1,0 +1,13 @@
+version: v1.0
+name: Semaphore Go CI examplee
+agent:
+  machine:
+    type: s1-kubernetes
+blocks:
+  - name: Build prod
+    task:
+      jobs:
+        - commands:
+            - echo "TEST"
+          name: test
+    dependencies: []
